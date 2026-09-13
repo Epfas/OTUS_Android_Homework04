@@ -10,10 +10,22 @@ abstract class VazPlatform(override val color: String) : Car {
     override fun wheelToLeft(degrees: Int) { wheelAngle -= degrees }
 
     // Получить оборудование
-    override fun getEquipment(): String = "Кузов, колеса, движок"
+    override fun getEquipment(): String {
+        return "Кузов, колеса, движок"
+    }
 
-    // Абстрактное свойство двигателя
     abstract val engine: VazEngine
+    abstract val fuelSystem: FuelSystem
+
+    override val tankMouth = object : TankMouth {
+        override fun refuel(fuelType: FuelType, amount: Double) {
+            if (!isFuelCompatible(fuelType))
+                throw FuelSystemException("Заправляемое топливо ${fuelType} не соответствует требуемому ${fuelSystem.fuelType}")
+            fuelSystem.refuel(amount)
+        }
+
+        override fun isFuelCompatible(fuelType: FuelType): Boolean = fuelType == fuelSystem.fuelType
+    }
 }
 
 // Перечисление двигателей ВАЗ

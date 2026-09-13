@@ -38,6 +38,8 @@ class Vaz2108 private constructor(color: String) : VazPlatform(color) {
     override lateinit var engine: VazEngine
         private set
 
+    override lateinit var fuelSystem: FuelSystem
+
     /**
      * Восьмерка едет так
      */
@@ -49,7 +51,11 @@ class Vaz2108 private constructor(color: String) : VazPlatform(color) {
     // Переопределяем метод родителя
     override fun getEquipment(): String {
         // Добавляем музыку к оборудованию
-        return super.getEquipment() + ", музыка"
+        var res = super.getEquipment()
+        if (::fuelSystem.isInitialized) {
+            res += ", тип топлива ${fuelSystem.fuelType}, объем бака  ${fuelSystem.getCapacity()}л"
+        }
+        return res + ", музыка"
     }
 
     private var currentSpeed: Int = 0 // Скока жмёт
@@ -63,7 +69,11 @@ class Vaz2108 private constructor(color: String) : VazPlatform(color) {
 
     // Выводим состояние машины
     override fun toString(): String {
-        return "Vaz2108(plates=$plates, wheelAngle=$wheelAngle, currentSpeed=$currentSpeed)"
+        var fuelSysInfo = ", Fuel system not installed"
+        if (::fuelSystem.isInitialized) {
+            fuelSysInfo = ", " + fuelSystem.toString()
+        }
+        return "Vaz2108 (plates=$plates, wheelAngle=$wheelAngle, currentSpeed=$currentSpeed)" + fuelSysInfo
     }
 
     /**
@@ -77,6 +87,12 @@ class Vaz2108 private constructor(color: String) : VazPlatform(color) {
     inner class VazOutput : CarOutput {
         override fun getCurrentSpeed(): Int {
             return this@Vaz2108.currentSpeed
+        }
+
+        override fun getFuelLevel(): Double {
+            if (::fuelSystem.isInitialized)
+                return this@Vaz2108.fuelSystem.getFuelLevel()
+            return 0.0
         }
     }
 }

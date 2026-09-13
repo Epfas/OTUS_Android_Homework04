@@ -1,5 +1,8 @@
 package ru.otus.cars
 
+import kotlin.math.roundToInt
+import kotlin.random.Random
+
 fun main() {
     println("\n===> drive cars...")
     driveCars()
@@ -16,11 +19,13 @@ fun main() {
     techChecks()
     println("\n===> Taz...")
     println(Taz.color)
+    println("\n===> Fuel Station...")
+    refuelCars()
 }
 
 fun driveCars() {
-    val vaz1 = Togliatti.buildCar(Vaz2107, Car.Plates("123", 77))
-    val vaz2 = Togliatti.buildCar(Vaz2108, Car.Plates("321", 78))
+    val vaz1 = Togliatti.buildCar(Vaz2107, Car.Plates("123", 77), FuelType.PETROL, 60.0)
+    val vaz2 = Togliatti.buildCar(Vaz2108, Car.Plates("321", 78), FuelType.LPG, 70.0)
 
     println("Экземпляры класса имеют разное внутреннее состояние:")
     vaz1.wheelToRight(10)
@@ -38,10 +43,13 @@ fun innerNestedCheck() {
     println("Скорость после проверки: ${output.getCurrentSpeed()}") // Выводит случайную скорость
 }
 
+
 fun garageMake() {
     val maker = "Дядя Вася"
+
     val garage = object : CarFactory {
-        override fun buildCar(builder: CarBuilder, plates: Car.Plates): Car {
+        override fun buildCar(builder: CarBuilder, plates: Car.Plates, fuelType: FuelType, tankCapacity:Double): Car {
+            println("")
             println("Запил Жигулей у: $maker...")
             println("Машину не проверяем... и в продакшн...")
             return builder.build(plates)
@@ -89,5 +97,32 @@ fun repairEngine(car: VazPlatform) {
     when (car.engine) {
         is VazEngine.LADA_2107 -> println("Чистка карбюратора у двигателя объемом ${car.engine.volume} куб.см у машины $car")
         is VazEngine.SAMARA_2108 -> println("Угол зажигания у двигателя объемом ${car.engine.volume} куб.см у машины $car")
+    }
+}
+
+fun refuelCars()
+{
+    val fuelStation = FuelStation()
+    val cars: List<Car> = listOf(Togliatti.buildCar(Vaz2107, Car.Plates("123", 77), FuelType.PETROL, 60.0),
+                                 Togliatti.buildCar(Vaz2108, Car.Plates("321", 78), FuelType.LPG, 70.0),
+                                 Togliatti.buildCar(Vaz2108, Car.Plates("456", 79), FuelType.DIESEL, 70.0))
+
+    cars.forEach()
+    {
+        try {
+            println()
+            println("Подъехала ${it.plates} с остатком топлива ${it.carOutput.getFuelLevel()} л")
+            val fuelAmount = Random.nextDouble(5.0, 80.0).roundToInt()
+            val fuelType: FuelType = FuelType.PETROL
+            println("Заправляем ${it.plates} топливом $fuelType $fuelAmount л")
+            fuelStation.provideFuel(it.tankMouth, fuelType, fuelAmount.toDouble())
+        }
+        catch (ex: Exception)
+        {
+            println("Ошибка ${it.plates}: ${ex.message}")
+        }
+        finally {
+            println("После заправки ${it.plates} остаток топлива ${it.carOutput.getFuelLevel()} л")
+        }
     }
 }

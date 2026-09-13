@@ -9,3 +9,4 @@ sealed interface CarBuilder {
      */
     fun build(plates: Car.Plates): Car
 }
+

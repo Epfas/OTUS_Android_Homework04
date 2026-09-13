@@ -36,4 +36,12 @@ object Taz: Car {
     override fun wheelToLeft(degrees: Int) {
         throw NotImplementedError("Руля нет")
     }
+
+    override val tankMouth = object : TankMouth {
+        override fun refuel(fuelType: FuelType, amount: Double) {
+            throw NotImplementedError("Бак сгнил и течет")
+        }
+
+        override fun isFuelCompatible(fuelType: FuelType): Boolean = false
+    }
 }
